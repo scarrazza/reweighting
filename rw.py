@@ -12,15 +12,31 @@ from tools import Data, Predictions
 def main():
 
     # load data, invcovmat and predictions
-    dt = Data('data/data.csv', 'data/invcovmat.csv')
-    th = Predictions('data/predictions.csv')
+    dt = Data('data/data.csv.tgz', 'data/invcovmat.csv.tgz')
+    th = Predictions('data/predictions.csv.tgz')
 
     # retreive cv and invcovmat as numpy arrays
     cv    = dt.get_data()
     sigma = dt.get_invcovmat()
     P     = th.get_predictions()
 
-    
+    """The chi² function is
+
+    v = (w@P) - cv
+    chi² = v@sigma@v
+
+    Therefore we need to minimize 1/2*w@A@W + B@w as a function of w
+    """
+
+    A = P@sigma@P.T/2
+    B = cv@sigma@P.T
+
+    #For interactive testing
+    return A, B
+
+
+
+
 def splash():
     print("\n 8888888b.  888       888 ")
     print(" 888   Y88b 888   o   888 ")
@@ -35,4 +51,4 @@ def splash():
 
 if __name__ == "__main__":
     splash()
-    main()
+    A,B = main()
