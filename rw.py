@@ -7,11 +7,19 @@ __license__ = 'GPL'
 __version__ = '1.0.0'
 __email__ = 'stefano.carrazza@cern.ch'
 
-
-import numpy as np
+from tools import Data, Predictions
 
 def main():
-    pass
+
+    # load data, invcovmat and predictions
+    dt = Data('data/data.csv', 'data/invcovmat.csv')
+    th = Predictions('data/predictions.csv')
+
+    # retreive cv and invcovmat as numpy arrays
+    cv    = dt.get_data()
+    sigma = dt.get_invcovmat()
+    P     = th.get_predictions()
+
     
 def splash():
     print("\n 8888888b.  888       888 ")
