@@ -18,7 +18,7 @@ def main():
     # retreive cv and invcovmat as numpy arrays
     cv    = dt.get_data()
     sigma = dt.get_invcovmat()
-    P     = th.get_predictions()
+    predictions     = th.get_predictions()
 
     """The chi² function is
 
@@ -28,11 +28,11 @@ def main():
     Therefore we need to minimize 1/2*w@A@W + B@w as a function of w
     """
 
-    A = P@sigma@P.T/2
-    B = cv@sigma@P.T
+    P = predictions@sigma@predictions.T/2
+    q = cv@sigma@predictions.T
 
     #For interactive testing
-    return A, B
+    return P, q
 
 
 
@@ -51,4 +51,4 @@ def splash():
 
 if __name__ == "__main__":
     splash()
-    A,B = main()
+    P,q = main()
