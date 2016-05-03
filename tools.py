@@ -50,7 +50,7 @@ class Predictions:
 
         print(' Opening predictions file: %s' % predfile)
         self.pred = pd.read_table(maybe_untar(predfile), header=[0,1],
-                                  ).dropna(axis=1)
+                                  index_col=0).dropna(axis=1)
 
     def get_predictions(self):
         return self.pred.as_matrix()
