@@ -1,5 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
+import numpy as np
+
+from cvxopt import matrix, solvers
+
+from tools import Data, Predictions
+
+
 """ A PDF reweighting tool """
 
 __author__ = 'Stefano Carrazza & Zahari Kassabov'
@@ -7,10 +15,20 @@ __license__ = 'GPL'
 __version__ = '1.0.0'
 __email__ = 'stefano.carrazza@cern.ch'
 
-from tools import Data, Predictions
 
-def main():
+def chi2(w, sigma, cv, predictions):
 
+    w = np.ravel(w)
+    diff = w@predictions - cv
+
+    chi2 = diff@sigma@diff/len(diff)
+
+    return chi2
+
+
+
+
+if True:
     # load data, invcovmat and predictions
     dt = Data('data/data.csv.tgz', 'data/invcovmat.csv.tgz')
     th = Predictions('data/predictions.csv.tgz')
@@ -25,14 +43,15 @@ def main():
     v = (w@P) - cv
     chi² = v@sigma@v
 
-    Therefore we need to minimize 1/2*w@A@W + B@w as a function of w
+    Therefore we need to minimize 1/2*w@P@W + q@w as a function of w
     """
 
-    P = predictions@sigma@predictions.T/2
-    q = cv@sigma@predictions.T
+    P = predictions@sigma@predictions.T
+    q = -cv@sigma@predictions.T
 
     #For interactive testing
-    return P, q
+
+    #return P, q
 
 
 
@@ -51,4 +70,27 @@ def splash():
 
 if __name__ == "__main__":
     splash()
-    P,q = main()
+    #P,q = main()
+
+        #For interactive testing
+    #A = np.zeros_like(P)
+    A = np.ones_like(P[0])
+
+    #b = np.zeros_like(P[0])
+    b = float(1)
+
+    G = -np.eye(len(A))
+
+    h = np.zeros(len(A))
+
+
+    P = matrix(P)
+    q = matrix(q)
+    A = matrix(A)
+    b = matrix(b)
+    G = matrix(G)
+    h = matrix(h)
+
+    solvers.options['feastol'] = 1e-12
+    sol = solvers.qp(P, q, G, h, A.T, b)
+
